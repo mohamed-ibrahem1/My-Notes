@@ -18,10 +18,7 @@ class TodayPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return AdaptiveCard(
                   title: 'Task ${index + 1}',
-                  subtitle: 'Details for Task ${index + 1}',
-                  onTap: () {
-                    // Handle card tap
-                  },
+
                   onDelete: () {
                     // Handle card delete
                   },

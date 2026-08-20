@@ -8,19 +8,24 @@ class AppBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
+    final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
 
-            const SizedBox(height: 20),
+    return Padding(
+      padding: EdgeInsets.only(bottom: keyboardHeight),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleLarge),
 
-            child,
-          ],
+              const SizedBox(height: 20),
+
+              child,
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/components/notes_bottom_sheet.dart';
+import 'package:my_notes/components/task_bottom_sheet.dart';
+import 'package:my_notes/components/tracker_bottom_sheet.dart';
 import 'pages/notes.dart';
 import 'pages/today.dart';
 import 'pages/tracker..dart';
@@ -17,8 +20,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'My Notes',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
       ),
+      themeMode: ThemeMode.dark,
       home: const MyHomePage(title: 'My Notes'),
     );
   }
@@ -49,12 +57,32 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showAddBottomSheet() {
+    switch (_selectedIndex) {
+      case 0:
+      case 1:
+        showTaskBottomSheet(context);
+        break;
+
+      case 2:
+        showNoteBottomSheet(context);
+        break;
+
+      case 3:
+        showTrackerBottomSheet(context);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -75,51 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Add New Note',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Note Title',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Note Content',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle note saving logic here
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Save Note'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+        onPressed: _showAddBottomSheet,
         child: const Icon(Icons.add),
       ),
     );

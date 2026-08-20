@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_notes/components/notes_bottom_sheet.dart';
 import 'package:my_notes/components/task_bottom_sheet.dart';
 import 'package:my_notes/components/tracker_bottom_sheet.dart';
+import 'package:my_notes/features/tasks/presentation/task_provider.dart';
+import 'appwrite_client.dart';
 import 'pages/notes.dart';
 import 'pages/today.dart';
 import 'pages/tracker..dart';
 import 'pages/week.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,16 +37,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = [
@@ -61,7 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (_selectedIndex) {
       case 0:
       case 1:
-        showTaskBottomSheet(context);
+        showTaskBottomSheet(
+          context,
+          onSave: (content) {
+            return ref.read(tasksProvider.notifier).addTask(content: content);
+          },
+        );
         break;
 
       case 2:
@@ -84,7 +94,18 @@ class _MyHomePageState extends State<MyHomePage> {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
-      body: _pages[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(child: _pages[_selectedIndex]),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () => client.ping(),
+              child: const Text('Send a ping'),
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

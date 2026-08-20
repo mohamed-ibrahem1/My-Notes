@@ -1,38 +1,60 @@
 import 'package:flutter/material.dart';
-import 'bottom_sheet.dart';
 
-void showTaskBottomSheet(BuildContext context) {
+void showTaskBottomSheet(
+  BuildContext context, {
+  required Future<void> Function(String content) onSave,
+}) {
   final controller = TextEditingController();
 
-  showAppBottomSheet(
+  showModalBottomSheet(
     context: context,
-    title: 'Add Task',
-    child: Column(
-      children: [
-        TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Task',
-            hintText: 'Enter task content',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 3,
+    isScrollControlled: true,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
         ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: null,
+              decoration: const InputDecoration(
+                labelText: 'Task',
+                hintText: 'Enter task content',
+                border: OutlineInputBorder(),
+              ),
+            ),
 
-        const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-        FilledButton(
-          onPressed: () {
-            final task = controller.text.trim();
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () async {
+                  final content = controller.text.trim();
 
-            if (task.isEmpty) return;
+                  if (content.isEmpty) {
+                    return;
+                  }
 
-            Navigator.pop(context);
-          },
-          child: const Text('Save Task'),
+                  await onSave(content);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Save Task'),
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
+      );
+    },
   );
 }

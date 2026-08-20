@@ -5,11 +5,13 @@ class AdaptiveCard extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final bool isCompleted;
 
   const AdaptiveCard({
     super.key,
     required this.title,
     this.subtitle,
+    this.isCompleted = false,
     this.onTap,
     this.onDelete,
   });
@@ -17,7 +19,7 @@ class AdaptiveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(title),
+      key: key ?? ValueKey(title),
       direction: DismissDirection.horizontal,
       onDismissed: (_) {
         onDelete?.call();

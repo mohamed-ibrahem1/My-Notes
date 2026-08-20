@@ -1,33 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/components/cards.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TodayPage extends StatelessWidget {
+import '../components/cards.dart';
+import '../features/tasks/presentation/task_provider.dart';
+
+class TodayPage extends ConsumerWidget {
   const TodayPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10, // Example item count
-              itemBuilder: (context, index) {
-                return AdaptiveCard(
-                  title: 'Task ${index + 1}',
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasksAsync = ref.watch(tasksProvider);
 
-                  onDelete: () {
-                    // Handle card delete
-                  },
-                );
+    return tasksAsync.when(
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text(
+            'Failed to load tasks:\n$error',
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return const Center(child: Text('No tasks for today'));
+        }
+
+        return ListView.builder(
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+
+            return AdaptiveCard(
+              key: ValueKey(task.id),
+              title: task.content,
+              isCompleted: task.completed,
+              onTap: () {
+                ref.read(tasksProvider.notifier).toggleTask(task);
               },
-            ),
-          ],
-        ),
-      ),
+              onDelete: () {
+                ref.read(tasksProvider.notifier).deleteTask(task.id);
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

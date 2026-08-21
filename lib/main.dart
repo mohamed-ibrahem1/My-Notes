@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_notes/components/notes_bottom_sheet.dart';
 import 'package:my_notes/components/task_bottom_sheet.dart';
 import 'package:my_notes/components/tracker_bottom_sheet.dart';
+import 'package:my_notes/features/notes/presentation/notes_provider.dart';
 import 'package:my_notes/features/tasks/presentation/task_provider.dart';
+import 'package:my_notes/features/week/presentation/week_provider.dart';
 import 'appwrite_client.dart';
 import 'pages/notes.dart';
 import 'pages/today.dart';
@@ -65,7 +67,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   void _showAddBottomSheet() {
     switch (_selectedIndex) {
       case 0:
-      case 1:
         showTaskBottomSheet(
           context,
           onSave: (content) {
@@ -74,8 +75,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         );
         break;
 
+      case 1:
+        showTaskBottomSheet(
+          context,
+          onSave: (content) {
+            return ref.read(weekProvider.notifier).addTask(content: content);
+          },
+        );
+        break;
+
       case 2:
-        showNoteBottomSheet(context);
+        showNoteBottomSheet(
+          context,
+          onSave: (title, content) {
+            return ref
+                .read(notesProvider.notifier)
+                .addNote(title: title, content: content);
+          },
+        );
         break;
 
       case 3:

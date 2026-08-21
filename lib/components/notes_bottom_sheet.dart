@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'bottom_sheet.dart';
 
-void showNoteBottomSheet(BuildContext context) {
+void showNoteBottomSheet(
+  BuildContext context, {
+  required Future<void> Function(String title, String content) onSave,
+}) {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
@@ -33,13 +37,17 @@ void showNoteBottomSheet(BuildContext context) {
         const SizedBox(height: 16),
 
         FilledButton(
-          onPressed: () {
+          onPressed: () async {
             final title = titleController.text.trim();
             final content = contentController.text.trim();
 
             if (title.isEmpty || content.isEmpty) return;
 
-            Navigator.pop(context);
+            await onSave(title, content);
+
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           },
           child: const Text('Save Note'),
         ),

@@ -94,18 +94,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(child: _pages[_selectedIndex]),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () => client.ping(),
-              child: const Text('Send a ping'),
-            ),
-          ),
-        ],
-      ),
+      body: Column(children: [Expanded(child: _pages[_selectedIndex])]),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

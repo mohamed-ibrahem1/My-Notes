@@ -8,6 +8,7 @@ class AppwriteService {
   static const String databaseId = '6a875b180026df88acc1';
 
   static const String tasksTableId = 'tasks';
+  static const String weekTasksTableId = 'week';
 
   late final Client client;
   late final TablesDB tablesDB;

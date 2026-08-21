@@ -2,24 +2,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/appwrite_provider.dart';
-import '../data/task_repository.dart';
-import '../domain/task.dart';
+import '../data/week_repository.dart';
+import '../domain/week_task.dart';
 
-final taskRepositoryProvider = Provider<TaskRepository>((ref) {
-  return TaskRepository(ref.watch(appwriteProvider));
+final weekRepositoryProvider = Provider<WeekRepository>((ref) {
+  return WeekRepository(ref.watch(appwriteProvider));
 });
 
-final tasksProvider = AsyncNotifierProvider<TasksNotifier, List<Task>>(
-  TasksNotifier.new,
+final weekProvider = AsyncNotifierProvider<WeekNotifier, List<WeekTask>>(
+  WeekNotifier.new,
 );
 
-class TasksNotifier extends AsyncNotifier<List<Task>> {
-  TaskRepository get _repository {
-    return ref.read(taskRepositoryProvider);
+class WeekNotifier extends AsyncNotifier<List<WeekTask>> {
+  WeekRepository get _repository {
+    return ref.read(weekRepositoryProvider);
   }
 
   @override
-  Future<List<Task>> build() {
+  Future<List<WeekTask>> build() {
     return _repository.getTasks();
   }
 
@@ -29,7 +29,7 @@ class TasksNotifier extends AsyncNotifier<List<Task>> {
     ref.invalidateSelf();
   }
 
-  Future<void> toggleTask(Task task) async {
+  Future<void> toggleTask(WeekTask task) async {
     await _repository.updateTaskCompletion(
       id: task.id,
       completed: !task.completed,
@@ -48,10 +48,10 @@ class TasksNotifier extends AsyncNotifier<List<Task>> {
       // Delete the task from Appwrite.
       await _repository.deleteTask(id);
     } catch (e, stackTrace) {
-      // Restore the task if the Appwrite deletion fails.
+      // Restore the task if deletion fails.
       state = AsyncData(previousTasks);
 
-      debugPrint('Failed to delete task: $e');
+      debugPrint('Failed to delete week task: $e');
       debugPrintStack(stackTrace: stackTrace);
     }
   }

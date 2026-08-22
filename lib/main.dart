@@ -6,7 +6,6 @@ import 'package:my_notes/components/tracker_bottom_sheet.dart';
 import 'package:my_notes/features/notes/presentation/notes_provider.dart';
 import 'package:my_notes/features/tasks/presentation/task_provider.dart';
 import 'package:my_notes/features/week/presentation/week_provider.dart';
-import 'appwrite_client.dart';
 import 'pages/notes.dart';
 import 'pages/today.dart';
 import 'pages/tracker..dart';
@@ -104,6 +103,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Allows body content to extend behind the floating nav bar
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
@@ -112,23 +113,42 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         ),
       ),
       body: Column(children: [Expanded(child: _pages[_selectedIndex])]),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.today), label: 'Today'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_view_week),
-            label: 'Week',
+
+      // ── Material 3 floating navigation bar ──────────────────────────────
+      bottomNavigationBar: Padding(
+        // Outer padding gives the "floating" gap around the bar
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.today_outlined),
+                selectedIcon: Icon(Icons.today),
+                label: 'Today',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.calendar_view_week_outlined),
+                selectedIcon: Icon(Icons.calendar_view_week),
+                label: 'Week',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.note_outlined),
+                selectedIcon: Icon(Icons.note),
+                label: 'Notes',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.track_changes_outlined),
+                selectedIcon: Icon(Icons.track_changes),
+                label: 'Tracker',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.note), label: 'Notes'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.track_changes),
-            label: 'Tracker',
-          ),
-        ],
+        ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddBottomSheet,
         child: const Icon(Icons.add),

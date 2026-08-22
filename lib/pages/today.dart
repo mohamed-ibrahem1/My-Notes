@@ -37,6 +37,7 @@ class TodayPage extends ConsumerWidget {
               key: ValueKey(task.id),
               title: task.content,
               isCompleted: task.completed,
+              showCheckbox: true,
               onTap: () {
                 ref.read(tasksProvider.notifier).toggleTask(task);
               },

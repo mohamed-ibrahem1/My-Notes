@@ -10,6 +10,8 @@ class AppwriteService {
   static const String tasksTableId = 'tasks';
   static const String weekTasksTableId = 'week';
   static const String notesTableId = 'notes';
+  static const String habitsTableId = 'habits';
+  static const String habitEntriesTableId = 'habit_entries';
 
   late final Client client;
   late final TablesDB tablesDB;

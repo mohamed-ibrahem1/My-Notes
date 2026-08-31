@@ -17,7 +17,10 @@ class AppwriteService {
   late final TablesDB tablesDB;
 
   AppwriteService() {
-    client = Client().setEndpoint(endpoint).setProject(projectId);
+    client = Client()
+        .setEndpoint(endpoint)
+        .setProject(projectId)
+        .setSelfSigned(status: true);
 
     tablesDB = TablesDB(client);
   }

@@ -49,7 +49,16 @@ void showNoteBottomSheet(
               Navigator.pop(context);
             }
           },
-          child: const Text('Save Note'),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text(
+            'Save Note',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ),
       ],
     ),

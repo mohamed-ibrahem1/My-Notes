@@ -1,0 +1,6 @@
+{
+  "dart.debugSdkLibraries": false,
+  "dart.debugExternalPackageLibraries": false,
+  "dart.evaluateGettersInDebugViews": true,
+  "dart.showDevToolsNotification": false
+}

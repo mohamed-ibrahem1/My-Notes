@@ -6,6 +6,7 @@ class AdaptiveCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
   final bool isCompleted;
+
   /// When true (Today / Week pages) the card shows a checkbox and
   /// applies strikethrough on completed items.
   /// When false (Notes / Tracker pages) it renders a plain ListTile.
@@ -41,9 +42,10 @@ class _AdaptiveCardState extends State<AdaptiveCard>
       vsync: this,
       duration: const Duration(milliseconds: 220),
     );
-    _slideAnim = Tween<double>(begin: 0.0, end: _actionWidth).animate(
-      CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut),
-    );
+    _slideAnim = Tween<double>(
+      begin: 0.0,
+      end: _actionWidth,
+    ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut));
   }
 
   @override
@@ -62,12 +64,15 @@ class _AdaptiveCardState extends State<AdaptiveCard>
     setState(() => _revealed = false);
   }
 
+  void _onHorizontalDragUpdate(DragUpdateDetails details) {
+    _animCtrl.value -= details.primaryDelta! / _actionWidth;
+  }
+
   void _onHorizontalDragEnd(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0;
-    // Swipe left to reveal, swipe right to hide
-    if (!_revealed && velocity < -300) {
+    if (velocity < -200 || _animCtrl.value >= 0.5) {
       _open();
-    } else if (_revealed && velocity > 300) {
+    } else if (velocity > 200 || _animCtrl.value < 0.5) {
       _close();
     }
   }
@@ -77,7 +82,16 @@ class _AdaptiveCardState extends State<AdaptiveCard>
     final cs = Theme.of(context).colorScheme;
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
+      onSecondaryTap: () {
+        if (_revealed) {
+          _close();
+        } else {
+          _open();
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         // ClipRect prevents the card from visually overflowing while sliding
@@ -163,6 +177,10 @@ class _AdaptiveCardState extends State<AdaptiveCard>
                       ),
                       title: Text(
                         widget.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                         maxLines: null,
                         overflow: TextOverflow.visible,
                       ),

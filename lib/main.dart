@@ -8,11 +8,22 @@ import 'package:my_notes/features/tasks/presentation/task_provider.dart';
 import 'package:my_notes/features/week/presentation/week_provider.dart';
 import 'pages/notes.dart';
 import 'pages/today.dart';
-import 'pages/tracker..dart';
+import 'pages/tracker.dart';
 import 'pages/week.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Ignore benign debug-only RawKeyboard assertion on Windows (e.g. Alt / Alt-Tab)
+  final originalOnError = FlutterError.onError;
+  FlutterError.onError = (FlutterErrorDetails details) {
+    final message = details.exceptionAsString();
+    if (message.contains('Attempted to send a key down event') ||
+        message.contains('raw_keyboard.dart')) {
+      return;
+    }
+    originalOnError?.call(details);
+  };
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -27,7 +38,7 @@ class MyApp extends StatelessWidget {
       title: 'My Notes',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.black,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
@@ -95,7 +106,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         break;
 
       case 3:
-        showTrackerBottomSheet(context);
+        showTrackerBottomSheet(context, ref);
         break;
     }
   }
@@ -106,7 +117,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       // Allows body content to extend behind the floating nav bar
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           widget.title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),

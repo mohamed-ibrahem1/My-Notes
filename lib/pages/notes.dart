@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_notes/features/notes/domain/note_domain.dart';
 
 import '../components/cards.dart';
+import '../components/empty_state_view.dart';
+import '../components/error_state_view.dart';
 import '../components/notes_search_bar.dart';
 import '../features/notes/presentation/notes_provider.dart';
 
@@ -45,11 +47,9 @@ class _NotesPageState extends ConsumerState<NotesPage> {
       },
 
       error: (error, stackTrace) {
-        return Center(
-          child: Text(
-            'Failed to load notes:\n$error',
-            textAlign: TextAlign.center,
-          ),
+        return ErrorStateView(
+          error: error,
+          onRetry: () => ref.invalidate(notesProvider),
         );
       },
 
@@ -62,12 +62,14 @@ class _NotesPageState extends ConsumerState<NotesPage> {
 
             Expanded(
               child: filteredNotes.isEmpty
-                  ? Center(
-                      child: Text(
-                        _searchQuery.isEmpty
-                            ? 'No notes yet'
-                            : 'No matching notes',
-                      ),
+                  ? EmptyStateView(
+                      icon: Icons.note_outlined,
+                      title: _searchQuery.isEmpty
+                          ? 'No notes yet'
+                          : 'No matching notes',
+                      subtitle: _searchQuery.isEmpty
+                          ? 'Tap + to create your first note.'
+                          : null,
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.only(top: 8, bottom: 80),

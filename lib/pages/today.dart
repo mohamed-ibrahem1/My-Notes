@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/cards.dart';
+import '../components/empty_state_view.dart';
+import '../components/error_state_view.dart';
 import '../features/tasks/presentation/task_provider.dart';
 
 class TodayPage extends ConsumerWidget {
@@ -16,16 +18,18 @@ class TodayPage extends ConsumerWidget {
         return const Center(child: CircularProgressIndicator());
       },
       error: (error, stackTrace) {
-        return Center(
-          child: Text(
-            'Failed to load tasks:\n$error',
-            textAlign: TextAlign.center,
-          ),
+        return ErrorStateView(
+          error: error,
+          onRetry: () => ref.invalidate(tasksProvider),
         );
       },
       data: (tasks) {
         if (tasks.isEmpty) {
-          return const Center(child: Text('No tasks for today'));
+          return const EmptyStateView(
+            icon: Icons.today_outlined,
+            title: 'No tasks for today',
+            subtitle: 'Tap + to add your first task.',
+          );
         }
 
         return ListView.builder(

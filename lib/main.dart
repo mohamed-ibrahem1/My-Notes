@@ -124,7 +124,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       ),
       body: Column(children: [Expanded(child: _pages[_selectedIndex])]),
 
-      // ── Material 3 floating navigation bar ──────────────────────────────
+      // ── Material 3 floating navigation bar ────────────────────────────── 
       bottomNavigationBar: Padding(
         // Outer padding gives the "floating" gap around the bar
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),

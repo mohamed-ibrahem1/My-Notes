@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../components/error_state_view.dart';
 import '../components/habit_calendar.dart';
 import '../features/tracker/domain/habit.dart';
 import '../features/tracker/presentation/tracker_provider.dart';
@@ -32,15 +33,19 @@ class _HabitDetailPageState extends ConsumerState<HabitDetailPage> {
 
   void _previousMonth() {
     setState(() {
-      _displayedMonth =
-          DateTime(_displayedMonth.year, _displayedMonth.month - 1);
+      _displayedMonth = DateTime(
+        _displayedMonth.year,
+        _displayedMonth.month - 1,
+      );
     });
   }
 
   void _nextMonth() {
     setState(() {
-      _displayedMonth =
-          DateTime(_displayedMonth.year, _displayedMonth.month + 1);
+      _displayedMonth = DateTime(
+        _displayedMonth.year,
+        _displayedMonth.month + 1,
+      );
     });
   }
 
@@ -48,7 +53,8 @@ class _HabitDetailPageState extends ConsumerState<HabitDetailPage> {
 
   void _onDayTap(DateTime date) {
     // For challenge habits, only allow toggling within the challenge range.
-    if (widget.habit.challengeEnabled && !widget.habit.isWithinChallenge(date)) {
+    if (widget.habit.challengeEnabled &&
+        !widget.habit.isWithinChallenge(date)) {
       return;
     }
 
@@ -56,18 +62,27 @@ class _HabitDetailPageState extends ConsumerState<HabitDetailPage> {
       _selectedDate = date;
     });
 
-    ref.read(allHabitEntriesProvider.notifier).toggleEntry(
-          habitId: widget.habit.id,
-          date: date,
-        );
+    ref
+        .read(allHabitEntriesProvider.notifier)
+        .toggleEntry(habitId: widget.habit.id, date: date);
   }
 
   // ── Month label ────────────────────────────────────────────────────────────
 
   String get _monthLabel {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${months[_displayedMonth.month - 1]} ${_displayedMonth.year}';
   }
@@ -92,7 +107,10 @@ class _HabitDetailPageState extends ConsumerState<HabitDetailPage> {
       ),
       body: entriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Failed to load entries:\n$e')),
+        error: (e, _) => ErrorStateView(
+          error: e,
+          onRetry: () => ref.invalidate(habitEntriesProvider(widget.habit.id)),
+        ),
         data: (entries) {
           final committedCount = entries.where((e) => e.completed).length;
 
@@ -115,9 +133,7 @@ class _HabitDetailPageState extends ConsumerState<HabitDetailPage> {
                 Center(
                   child: Text(
                     'Days Committed',
-                    style: tt.titleMedium?.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                    style: tt.titleMedium?.copyWith(color: cs.onSurfaceVariant),
                   ),
                 ),
 

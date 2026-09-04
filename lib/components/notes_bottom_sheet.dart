@@ -4,14 +4,17 @@ import 'bottom_sheet.dart';
 
 void showNoteBottomSheet(
   BuildContext context, {
+  String? initialTitle,
+  String? initialContent,
   required Future<void> Function(String title, String content) onSave,
 }) {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
+  final isEditing = initialTitle != null;
+  final titleController = TextEditingController(text: initialTitle);
+  final contentController = TextEditingController(text: initialContent);
 
   showAppBottomSheet(
     context: context,
-    title: 'Add Note',
+    title: isEditing ? 'Edit Note' : 'Add Note',
     child: Column(
       children: [
         TextField(
@@ -55,9 +58,9 @@ void showNoteBottomSheet(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'Save Note',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          child: Text(
+            isEditing ? 'Update Note' : 'Save Note',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
       ],

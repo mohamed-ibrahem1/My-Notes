@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/cards.dart';
 import '../components/empty_state_view.dart';
 import '../components/error_state_view.dart';
+import '../components/task_bottom_sheet.dart';
 import '../features/tasks/presentation/task_provider.dart';
 
 class TodayPage extends ConsumerWidget {
@@ -44,6 +45,17 @@ class TodayPage extends ConsumerWidget {
               showCheckbox: true,
               onTap: () {
                 ref.read(tasksProvider.notifier).toggleTask(task);
+              },
+              onLongPress: () {
+                showTaskBottomSheet(
+                  context,
+                  initialContent: task.content,
+                  onSave: (content) {
+                    return ref
+                        .read(tasksProvider.notifier)
+                        .updateTaskContent(id: task.id, content: content);
+                  },
+                );
               },
               onDelete: () {
                 ref.read(tasksProvider.notifier).deleteTask(task.id);

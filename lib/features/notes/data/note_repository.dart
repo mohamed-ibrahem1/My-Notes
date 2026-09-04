@@ -25,21 +25,25 @@ class NoteRepository {
   }
 
   Future<List<Note>> getNotes() async {
-    final models.RowList result = await _retry(() => appwrite.tablesDB.listRows(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.notesTableId,
-    ));
+    final models.RowList result = await _retry(
+      () => appwrite.tablesDB.listRows(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.notesTableId,
+      ),
+    );
 
     return result.rows.map((row) => Note.fromMap(row.data)).toList();
   }
 
   Future<Note> addNote({required String title, required String content}) async {
-    final row = await _retry(() => appwrite.tablesDB.createRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.notesTableId,
-      rowId: ID.unique(),
-      data: {'title': title, 'content': content},
-    ));
+    final row = await _retry(
+      () => appwrite.tablesDB.createRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.notesTableId,
+        rowId: ID.unique(),
+        data: {'title': title, 'content': content},
+      ),
+    );
 
     return Note.fromMap(row.data);
   }
@@ -49,19 +53,34 @@ class NoteRepository {
     required String title,
     required String content,
   }) async {
-    await _retry(() => appwrite.tablesDB.updateRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.notesTableId,
-      rowId: id,
-      data: {'title': title, 'content': content},
-    ));
+    await _retry(
+      () => appwrite.tablesDB.updateRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.notesTableId,
+        rowId: id,
+        data: {'title': title, 'content': content},
+      ),
+    );
   }
 
   Future<void> deleteNote(String id) async {
-    await _retry(() => appwrite.tablesDB.deleteRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.notesTableId,
-      rowId: id,
-    ));
+    await _retry(
+      () => appwrite.tablesDB.deleteRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.notesTableId,
+        rowId: id,
+      ),
+    );
+  }
+
+  Future<void> setPinned({required String id, required bool pinned}) async {
+    await _retry(
+      () => appwrite.tablesDB.updateRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.notesTableId,
+        rowId: id,
+        data: {'pinned': pinned},
+      ),
+    );
   }
 }

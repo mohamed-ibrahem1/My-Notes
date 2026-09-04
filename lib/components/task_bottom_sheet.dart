@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 void showTaskBottomSheet(
   BuildContext context, {
+  String? initialContent,
   required Future<void> Function(String content) onSave,
 }) {
-  final controller = TextEditingController();
+  final isEditing = initialContent != null;
+  final controller = TextEditingController(text: initialContent);
 
   showModalBottomSheet(
     context: context,
@@ -55,9 +57,12 @@ void showTaskBottomSheet(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Save task',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                child: Text(
+                  isEditing ? 'Update task' : 'Save task',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),

@@ -56,4 +56,30 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       debugPrintStack(stackTrace: stackTrace);
     }
   }
+
+  Future<void> togglePin(String id) async {
+    final previousNotes = state.value ?? [];
+    final note = previousNotes.firstWhere((n) => n.id == id);
+    final newPinned = !note.pinned;
+
+    // Reflect the pin change immediately.
+    state = AsyncData([
+      for (final n in previousNotes)
+        if (n.id == id)
+          Note(id: n.id, title: n.title, content: n.content, pinned: newPinned)
+        else
+          n,
+    ]);
+
+    try {
+      await _repository.setPinned(id: id, pinned: newPinned);
+    } catch (e, stackTrace) {
+      // Revert if the update fails.
+      state = AsyncData(previousNotes);
+
+      debugPrint('Failed to toggle pin: $e');
+      debugPrintStack(stackTrace: stackTrace);
+      rethrow;
+    }
+  }
 }

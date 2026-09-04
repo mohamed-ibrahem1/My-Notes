@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/cards.dart';
 import '../components/empty_state_view.dart';
 import '../components/error_state_view.dart';
+import '../components/task_bottom_sheet.dart';
 import '../features/week/presentation/week_provider.dart';
 
 class WeekPage extends ConsumerWidget {
@@ -44,6 +45,17 @@ class WeekPage extends ConsumerWidget {
               showCheckbox: true,
               onTap: () {
                 ref.read(weekProvider.notifier).toggleTask(task);
+              },
+              onLongPress: () {
+                showTaskBottomSheet(
+                  context,
+                  initialContent: task.content,
+                  onSave: (content) {
+                    return ref
+                        .read(weekProvider.notifier)
+                        .updateTaskContent(id: task.id, content: content);
+                  },
+                );
               },
               onDelete: () {
                 ref.read(weekProvider.notifier).deleteTask(task.id);

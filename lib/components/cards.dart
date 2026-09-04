@@ -4,6 +4,7 @@ class AdaptiveCard extends StatefulWidget {
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final VoidCallback? onDelete;
   final bool isCompleted;
 
@@ -12,14 +13,23 @@ class AdaptiveCard extends StatefulWidget {
   /// When false (Notes / Tracker pages) it renders a plain ListTile.
   final bool showCheckbox;
 
+  /// Whether this item is pinned. Only relevant when [onTogglePin] is set.
+  final bool isPinned;
+
+  /// When provided, shows a pin toggle button on the card.
+  final VoidCallback? onTogglePin;
+
   const AdaptiveCard({
     super.key,
     required this.title,
     this.subtitle,
     this.isCompleted = false,
     this.showCheckbox = false,
+    this.isPinned = false,
     this.onTap,
+    this.onLongPress,
     this.onDelete,
+    this.onTogglePin,
   });
 
   @override
@@ -85,6 +95,7 @@ class _AdaptiveCardState extends State<AdaptiveCard>
       behavior: HitTestBehavior.opaque,
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
+      onLongPress: widget.onLongPress,
       onSecondaryTap: () {
         if (_revealed) {
           _close();
@@ -190,6 +201,18 @@ class _AdaptiveCardState extends State<AdaptiveCard>
                               widget.subtitle!,
                               maxLines: null,
                               overflow: TextOverflow.visible,
+                            ),
+                      trailing: widget.onTogglePin == null
+                          ? null
+                          : IconButton(
+                              icon: Icon(
+                                widget.isPinned
+                                    ? Icons.push_pin
+                                    : Icons.push_pin_outlined,
+                                color: widget.isPinned ? cs.primary : null,
+                              ),
+                              tooltip: widget.isPinned ? 'Unpin' : 'Pin',
+                              onPressed: widget.onTogglePin,
                             ),
                       onTap: () {
                         if (_revealed) _close();

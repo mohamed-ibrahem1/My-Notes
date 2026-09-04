@@ -38,6 +38,15 @@ class WeekNotifier extends AsyncNotifier<List<WeekTask>> {
     ref.invalidateSelf();
   }
 
+  Future<void> updateTaskContent({
+    required String id,
+    required String content,
+  }) async {
+    await _repository.updateTaskContent(id: id, content: content);
+
+    ref.invalidateSelf();
+  }
+
   Future<void> deleteTask(String id) async {
     final previousTasks = state.value ?? [];
 

@@ -25,21 +25,25 @@ class TaskRepository {
   }
 
   Future<List<Task>> getTasks() async {
-    final models.RowList result = await _retry(() => appwrite.tablesDB.listRows(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.tasksTableId,
-    ));
+    final models.RowList result = await _retry(
+      () => appwrite.tablesDB.listRows(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.tasksTableId,
+      ),
+    );
 
     return result.rows.map((row) => Task.fromMap(row.data)).toList();
   }
 
   Future<Task> addTask({required String content}) async {
-    final row = await _retry(() => appwrite.tablesDB.createRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.tasksTableId,
-      rowId: ID.unique(),
-      data: {'content': content, 'completed': false},
-    ));
+    final row = await _retry(
+      () => appwrite.tablesDB.createRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.tasksTableId,
+        rowId: ID.unique(),
+        data: {'content': content, 'completed': false},
+      ),
+    );
 
     return Task.fromMap(row.data);
   }
@@ -48,19 +52,37 @@ class TaskRepository {
     required String id,
     required bool completed,
   }) async {
-    await _retry(() => appwrite.tablesDB.updateRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.tasksTableId,
-      rowId: id,
-      data: {'completed': completed},
-    ));
+    await _retry(
+      () => appwrite.tablesDB.updateRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.tasksTableId,
+        rowId: id,
+        data: {'completed': completed},
+      ),
+    );
   }
 
   Future<void> deleteTask(String id) async {
-    await _retry(() => appwrite.tablesDB.deleteRow(
-      databaseId: AppwriteService.databaseId,
-      tableId: AppwriteService.tasksTableId,
-      rowId: id,
-    ));
+    await _retry(
+      () => appwrite.tablesDB.deleteRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.tasksTableId,
+        rowId: id,
+      ),
+    );
+  }
+
+  Future<void> updateTaskContent({
+    required String id,
+    required String content,
+  }) async {
+    await _retry(
+      () => appwrite.tablesDB.updateRow(
+        databaseId: AppwriteService.databaseId,
+        tableId: AppwriteService.tasksTableId,
+        rowId: id,
+        data: {'content': content},
+      ),
+    );
   }
 }

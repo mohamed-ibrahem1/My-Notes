@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-/// Returns true if [error] looks like a network/connectivity failure
-/// (no internet, DNS failure, timeout) rather than an application error.
+enum ErrorKind { connectivity, appwriteConfig, appwriteLimit, unknown }
+
 bool isConnectivityError(Object error) {
   if (error is SocketException || error is TimeoutException) {
     return true;
@@ -27,11 +27,32 @@ bool isConnectivityError(Object error) {
   return networkHints.any(message.contains);
 }
 
-/// Minimal, user-friendly placeholder shown instead of raw error text.
-///
-/// Shows a dedicated "no internet" message for connectivity failures, and a
-/// generic message for anything else, so implementation details never leak
-/// to the user.
+ErrorKind classifyError(Object error) {
+  final message = error.toString().toLowerCase();
+
+  if (isConnectivityError(error)) {
+    return ErrorKind.connectivity;
+  }
+
+  if (message.contains('appwrite') &&
+      (message.contains('not configured') ||
+          message.contains('project') ||
+          message.contains('database') ||
+          message.contains('endpoint'))) {
+    return ErrorKind.appwriteConfig;
+  }
+
+  if (message.contains('rate limit') ||
+      message.contains('quota') ||
+      message.contains('limit reached') ||
+      message.contains('too many requests') ||
+      message.contains('free plan')) {
+    return ErrorKind.appwriteLimit;
+  }
+
+  return ErrorKind.unknown;
+}
+
 class ErrorStateView extends StatelessWidget {
   final Object error;
   final VoidCallback? onRetry;
@@ -41,7 +62,36 @@ class ErrorStateView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final isOffline = isConnectivityError(error);
+    final kind = classifyError(error);
+
+    String title;
+    String subtitle;
+    IconData icon;
+
+    switch (kind) {
+      case ErrorKind.connectivity:
+        title = 'Connection problem';
+        subtitle = 'Check your internet connection and try again.';
+        icon = Icons.wifi_off_rounded;
+        break;
+      case ErrorKind.appwriteConfig:
+        title = 'Appwrite configuration error';
+        subtitle =
+            'Appwrite is not configured correctly. Check the endpoint, project ID, and database ID.';
+        icon = Icons.api_rounded;
+        break;
+      case ErrorKind.appwriteLimit:
+        title = 'Appwrite service limit reached';
+        subtitle =
+            'The free plan may have reached its request or storage limit. Please wait and try again later or upgrade the plan.';
+        icon = Icons.warning_amber_rounded;
+        break;
+      case ErrorKind.unknown:
+        title = 'Something went wrong';
+        subtitle = 'Please try again in a moment.';
+        icon = Icons.error_outline_rounded;
+        break;
+    }
 
     return Center(
       child: Padding(
@@ -49,22 +99,16 @@ class ErrorStateView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isOffline ? Icons.wifi_off_rounded : Icons.error_outline_rounded,
-              size: 56,
-              color: cs.onSurfaceVariant,
-            ),
+            Icon(icon, size: 56, color: cs.onSurfaceVariant),
             const SizedBox(height: 16),
             Text(
-              isOffline ? 'No internet connection' : 'Something went wrong',
+              title,
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              isOffline
-                  ? 'Check your connection and try again.'
-                  : 'Please try again in a moment.',
+              subtitle,
               style: TextStyle(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),

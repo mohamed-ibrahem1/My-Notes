@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+﻿import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:my_notes/main.dart';
+import 'package:my_notes/components/error_state_view.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('shows a clear Appwrite configuration message', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ErrorStateView(
+          error: StateError(
+            'Appwrite is not configured. Pass APPWRITE_ENDPOINT and APPWRITE_PROJECT_ID using --dart-define.',
+          ),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Appwrite configuration error'), findsOneWidget);
+    expect(find.textContaining('endpoint'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('shows a clear network message for connectivity errors', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: const ErrorStateView(
+          error: SocketException('Connection refused'),
+        ),
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Connection problem'), findsOneWidget);
+    expect(find.textContaining('internet'), findsOneWidget);
   });
 }

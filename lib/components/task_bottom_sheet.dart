@@ -11,6 +11,10 @@ void showTaskBottomSheet(
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: const Color(0xFF070F2B),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
     builder: (context) {
       return Padding(
         padding: EdgeInsets.only(

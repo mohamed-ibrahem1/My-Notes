@@ -41,6 +41,7 @@ void showAppBottomSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    backgroundColor: const Color(0xFF070F2B),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),

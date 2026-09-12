@@ -8,6 +8,7 @@ void showTrackerBottomSheet(BuildContext context, WidgetRef ref) {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    backgroundColor: const Color(0xFF070F2B),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -102,14 +103,18 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
     if (name.isEmpty) return;
 
     if (_challengeEnabled && _endDate.isBefore(_startDate)) {
-      setState(() => _validationError = 'End date must be on or after start date.');
+      setState(
+        () => _validationError = 'End date must be on or after start date.',
+      );
       return;
     }
 
     setState(() => _saving = true);
 
     try {
-      await widget.ref.read(habitsProvider.notifier).addHabit(
+      await widget.ref
+          .read(habitsProvider.notifier)
+          .addHabit(
             name: name,
             challengeEnabled: _challengeEnabled,
             startDate: _challengeEnabled ? _startDate : null,
@@ -156,7 +161,10 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
                 children: [
                   Icon(Icons.track_changes, color: cs.primary, size: 28),
                   const SizedBox(width: 12),
-                  Text('New Habit', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'New Habit',
+                    style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
 
@@ -197,7 +205,9 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
                               children: [
                                 Text(
                                   'Set Challenge Duration',
-                                  style: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                  style: tt.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
@@ -236,7 +246,10 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
 
                           // Start date
                           ListTile(
-                            leading: Icon(Icons.calendar_today_outlined, color: cs.primary),
+                            leading: Icon(
+                              Icons.calendar_today_outlined,
+                              color: cs.primary,
+                            ),
                             title: const Text('Start Date'),
                             trailing: Text(
                               _formatDate(_startDate),
@@ -253,7 +266,10 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
 
                           // End date
                           ListTile(
-                            leading: Icon(Icons.event_outlined, color: cs.primary),
+                            leading: Icon(
+                              Icons.event_outlined,
+                              color: cs.primary,
+                            ),
                             title: const Text('End Date'),
                             trailing: Text(
                               _formatDate(_endDate),
@@ -322,7 +338,10 @@ class _TrackerBottomSheetState extends State<_TrackerBottomSheet> {
                       )
                     : const Text(
                         'Save Habit',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
               ),
             ],

@@ -31,10 +31,15 @@ class _NotesSearchBarState extends State<NotesSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    const cardBackground = Color(0xFF070F2B);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: SearchBar(
         controller: _controller,
+        backgroundColor: WidgetStatePropertyAll(cardBackground),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
         leading: const Icon(Icons.search),
         hintText: 'Search notes...',
         trailing: [
